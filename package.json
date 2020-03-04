@@ -9,7 +9,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Kalyzee/react-native-gstreamer.git"
+        "url": "git+https://github.com/pr0totyper/react-native-gstreamer.git"
     },
     "keywords": [
         "react-native",
@@ -23,9 +23,9 @@
     "author": "Alann Sapone (Kalyzée)",
     "license": "GPL-3.0",
     "bugs": {
-        "url": "https://github.com/Kalyzee/react-native-gstreamer/issues"
+        "url": "https://github.com/pr0totyper/react-native-gstreamer/issues"
     },
-    "homepage": "https://github.com/Kalyzee/react-native-gstreamer#readme",
+    "homepage": "https://github.com/pr0totyper/react-native-gstreamer#readme",
     "dependencies": {
         "react": "16.0.0",
         "prop-types": "^15.6.0"
