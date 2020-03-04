@@ -39,7 +39,7 @@ static RCTGstPlayerView *instance;
         self->pipelineState = NULL;
         self->is_view_ready = FALSE;
         self->userData = [self getUserData];
-        self->uri = NULL;
+        self->port = 5000;
         self->volume = 0;
         self->refreshRate = 50;
         
@@ -73,30 +73,12 @@ static RCTGstPlayerView *instance;
     rct_gst_set_playbin_state([self getUserData], GST_STATE_PLAYING);
 }
 
-// Setters
-- (void)setUri:(NSString *)uri
-{
-    // self->uri = @"rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov";
-    self->uri = uri;
-    
-    if (self->is_view_ready)
-        rct_gst_set_uri([self getUserData], g_strdup([uri UTF8String]));
-}
-
 - (void)setRefreshRate:(guint64)refreshRate
 {
     self->refreshRate = refreshRate;
     
     if (self->is_view_ready)
         rct_gst_set_ui_refresh_rate([self getUserData], refreshRate);
-}
-
-- (void)setVolume:(gdouble)volume
-{
-    self->volume = volume;
-    
-    if (self->is_view_ready)
-        rct_gst_set_volume([self getUserData], volume);
 }
 
 - (void) setViewReady:(gboolean) is_view_ready
@@ -106,13 +88,11 @@ static RCTGstPlayerView *instance;
     [self getUserData]->configuration->onPlayerInit = onPlayerInit;
     [self getUserData]->configuration->onPadAdded = onPadAdded;
     [self getUserData]->configuration->onEOS = onEOS;
-    [self getUserData]->configuration->onUriChanged = onUriChanged;
     [self getUserData]->configuration->onPlayingProgress = onPlayingProgress;
     [self getUserData]->configuration->onBufferingProgress = onBufferingProgress;
     [self getUserData]->configuration->onElementError = onElementError;
     [self getUserData]->configuration->onElementLog = onElementLog;
     [self getUserData]->configuration->onStateChanged = onStateChanged;
-    [self getUserData]->configuration->onVolumeChanged = onVolumeChanged;
     
     // Preparing pipeline
     rct_gst_init([self getUserData]);
@@ -127,9 +107,8 @@ static RCTGstPlayerView *instance;
 void onPlayerInit(RCTGstPlayerView *self)
 {
     // Apply what has been stored in instance
-    rct_gst_set_uri([self getUserData], g_strdup([self->uri UTF8String]));
+    //rct_gst_set_uri([self getUserData], g_strdup([self->uri UTF8String]));
     rct_gst_set_ui_refresh_rate([self getUserData], self->refreshRate);
-    rct_gst_set_volume([self getUserData], self->volume);
     
     if (self->pipelineState != NULL)
         [self setPipelineState:self->pipelineState];
@@ -149,12 +128,6 @@ void onEOS(RCTGstPlayerView *self)
     self.onEOS(@{});
 }
 
-void onUriChanged(RCTGstPlayerView *self, gchar* newUri) {
-    NSString *uri = [NSString stringWithUTF8String:newUri];
-    NSLog(@"RCTGstPlayer : URI : %@ - LENGTH : %d", uri, uri.length);
-    self.onUriChanged(@{ @"new_uri": uri });
-}
-
 void onPlayingProgress(RCTGstPlayerView *self, gint64 progress, gint64 duration) {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.onPlayingProgress(@{
@@ -165,17 +138,22 @@ void onPlayingProgress(RCTGstPlayerView *self, gint64 progress, gint64 duration)
 }
 
 void onBufferingProgress(RCTGstPlayerView *self, gint progress) {
-    self.onBufferingProgress(@{
-                               @"progress": [NSNumber numberWithInteger:progress]
-                               });
+  dispatch_async(dispatch_get_main_queue(), ^{
+      self.onBufferingProgress(@{
+      @"progress": [NSNumber numberWithInteger:progress]
+      });
+  });
 }
 
 void onElementError(RCTGstPlayerView *self, gchar *source, gchar *message, gchar *debug_info) {
-    self.onElementError(@{
-                          @"source": [NSString stringWithUTF8String:source],
-                          @"message": [NSString stringWithUTF8String:message],
-                          @"debug_info": [NSString stringWithUTF8String:debug_info]
-                          });
+  NSLog(@"onElementError: %s, %s, %s", source, message, debug_info);
+  dispatch_async(dispatch_get_main_queue(), ^{
+      self.onElementError(@{
+      @"source": [NSString stringWithUTF8String:source],
+      @"message": [NSString stringWithUTF8String:message],
+      @"debug_info": [NSString stringWithUTF8String:debug_info]
+      });
+  });
 }
 
 void onElementLog(RCTGstPlayerView *self, gchar *newMessage) {
@@ -188,28 +166,9 @@ void onElementLog(RCTGstPlayerView *self, gchar *newMessage) {
 void onStateChanged(RCTGstPlayerView *self, GstState old_state, GstState new_state) {
     NSNumber* oldState = [NSNumber numberWithInt:old_state];
     NSNumber* newState = [NSNumber numberWithInt:new_state];
-    
-    self.onStateChanged(@{ @"old_state": oldState, @"new_state": newState });
-}
-
-void onVolumeChanged(RCTGstPlayerView *self, RctGstAudioLevel* audioLevel, gint nb_channels) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        NSMutableDictionary *js_dictionary = [[NSMutableDictionary alloc] init];
-        
-        for (int i = 0; i < nb_channels; i++) {
-            RctGstAudioLevel *audioChannelLevel = &audioLevel[i];
-            [js_dictionary setObject:@{
-                                       @"decay": @(audioChannelLevel->decay),
-                                       @"rms": @(audioChannelLevel->rms),
-                                       @"peak": @(audioChannelLevel->peak),
-                                       } forKey: [NSString stringWithFormat:@"%d", i]
-             ];
-        }
-        
-        self.onVolumeChanged(js_dictionary);
-        [js_dictionary removeAllObjects];
-    });
+  dispatch_async(dispatch_get_main_queue(), ^{
+      self.onStateChanged(@{ @"old_state": oldState, @"new_state": newState });
+  });
 }
 
 -(void)removeFromSuperview {

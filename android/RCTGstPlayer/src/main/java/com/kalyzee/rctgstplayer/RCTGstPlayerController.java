@@ -34,8 +34,6 @@ public class RCTGstPlayerController implements RCTGstConfigurationCallable, Surf
     private native void nativeRCTGstInit();
     private native void nativeRCTGstTerminate();
     private native void nativeRCTGstSetDrawableSurface(Surface drawableSurface);
-    private native void nativeRCTGstSetUri(String uri);
-    private native void nativeRCTGstSetVolume(double volume);
     private native void nativeRCTGstSetUiRefreshRate(int uiRefreshRate);
     private native void nativeRCTGstSetPipelineState(int state);
     private native void nativeRCTGstSeek(long progress);
@@ -78,41 +76,6 @@ public class RCTGstPlayerController implements RCTGstConfigurationCallable, Surf
 
         context.getJSModule(RCTEventEmitter.class).receiveEvent(
                 view.getId(), "onStateChanged", event
-        );
-    }
-
-    @Override
-    public void onVolumeChanged(RCTGstAudioLevel[] audioLevels, int nbChannels) {
-        WritableMap event = Arguments.createMap();
-
-        for (int currentChannel = 0; currentChannel < nbChannels; currentChannel++) {
-
-            RCTGstAudioLevel audioLevel = audioLevels[currentChannel];
-
-            WritableMap audioLevelMap = Arguments.createMap();
-
-            audioLevelMap.putDouble("rms", audioLevel.getRms());
-            audioLevelMap.putDouble("peak", audioLevel.getPeak());
-            audioLevelMap.putDouble("decay", audioLevel.getDecay());
-
-            event.putMap(Integer.toString(currentChannel), audioLevelMap);
-        }
-
-        event.putInt("nbChannels", nbChannels);
-
-        context.getJSModule(RCTEventEmitter.class).receiveEvent(
-                view.getId(), "onVolumeChanged", event
-        );
-    }
-
-    @Override
-    public void onUriChanged(String new_uri) {
-        WritableMap event = Arguments.createMap();
-
-        event.putString("new_uri", new_uri);
-
-        context.getJSModule(RCTEventEmitter.class).receiveEvent(
-                view.getId(), "onUriChanged", event
         );
     }
 
@@ -221,19 +184,6 @@ public class RCTGstPlayerController implements RCTGstConfigurationCallable, Surf
     }
 
     // Manager Shared properties
-    void setRctGstUri(String uri) {
-        Log.d(LOG_TAG, "setRctGstUri - Java side : " + uri);
-        if (uri.length() > 0) {
-            nativeRCTGstSetUri(uri);
-        } else {
-            Log.e(LOG_TAG, "Uri undefined");
-        }
-    }
-
-    void setRctGstVolume(double volume) {
-        nativeRCTGstSetVolume(volume);
-    }
-
     void setRctGstUiRefreshRate(int uiRefreshRate) {
         nativeRCTGstSetUiRefreshRate(uiRefreshRate);
     }

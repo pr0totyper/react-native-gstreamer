@@ -27,7 +27,7 @@ typedef struct {
 // Plugin configurator
 typedef struct
 {
-    gchar *uri;                                                     // Uri of the resource
+    guint64 port;                                                     // port of the resource
     guint64 uiRefreshRate;                                          // Time in ms between each call of onVolumeChanged
     guintptr drawableSurface;                                       // Pointer to drawable surface
     gdouble volume;                                                 // Volume of the resource
@@ -37,8 +37,6 @@ typedef struct
     void(*onPlayerInit)(void *owner);                                                       // Called when the player is ready
     void(*onPadAdded)(void *owner, gchar *name);                                            // Called when pad is created
     void(*onStateChanged)(void *owner, GstState old_state, GstState new_state);             // Called method when GStreamer state changes
-    void(*onVolumeChanged)(void *owner, RctGstAudioLevel *audioLevel, gint nb_channels);    // Called method when current media volume changes
-    void(*onUriChanged)(void *owner, gchar *new_uri);                                       // Called when changing uri is over
     void(*onPlayingProgress)(void *owner, gint64 progress, gint64 duration);                // Called when playing progression changed / duration is defined
     void(*onBufferingProgress)(void *owner, gint progress);                                 // Called when buffering progression changed
     void(*onEOS)(void *owner);                                                              // Called when EOS occurs
@@ -66,19 +64,10 @@ typedef struct {
     GstElement *video_sink;
     GstElement *video_depay;
     GstElement *decodebin;
-
-    // Audio
-    GstBin *audio_sink_bin;
     GstBin *video_sink_bin;
-    GstElement *audio_level_analyser;
-    GstElement *audio_queue;
-    GstElement *audio_sink;
-    GstElement *volume_controller;
-    GstElement *audio_depay;
     
     // Misc
     GstElement *source;
-    gboolean must_apply_uri;
     gboolean is_ready;
     gboolean must_clear_screen;
     gint reconnect_retry_count;
@@ -105,14 +94,11 @@ void rct_gst_run_loop(RctGstUserData *user_data);
 void rct_gst_terminate(RctGstUserData *user_data);
 
 gchar *rct_gst_get_info();
-static void rct_gst_apply_uri(RctGstUserData *user_data);
 static void execute_seek(RctGstUserData* user_data, gint64 position);
 void rct_gst_seek(RctGstUserData *user_data, gint64 position);
 
 // Setters
-void rct_gst_set_uri(RctGstUserData *user_data, gchar* _uri);
 void rct_gst_set_ui_refresh_rate(RctGstUserData *user_data, guint64 audio_level_refresh_rate);
-void rct_gst_set_volume(RctGstUserData *user_data, gdouble volume);
 void rct_gst_set_drawable_surface(RctGstUserData *user_data, guintptr drawable_surface);
 
 // Utils

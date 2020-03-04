@@ -170,13 +170,6 @@ static void native_rct_gst_init(JNIEnv* env, jobject thiz)
     on_element_error_id = (*env)->GetMethodID(env, klass, "onElementError", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
     get_user_data()->configuration->onElementError = native_on_element_error;
 
-    // onUriChanged
-    on_uri_changed_id = (*env)->GetMethodID(env, klass, "onUriChanged", "(Ljava/lang/String;)V");
-    get_user_data()->configuration->onUriChanged = native_on_uri_changed;
-
-    // onVolumeChanged
-    on_volume_changed_id = (*env)->GetMethodID(env, klass, "onVolumeChanged", "([Lcom/kalyzee/rctgstplayer/utils/RCTGstAudioLevel;I)V");
-    get_user_data()->configuration->onVolumeChanged = native_on_volume_changed;
 
     // Creating native code internal data gst_app_thread
     app = (*env)->NewGlobalRef(env, thiz);
@@ -232,23 +225,6 @@ static void native_rct_gst_set_pipeline_state(JNIEnv* env, jobject thiz, jint st
     rct_gst_set_playbin_state(get_user_data(), (GstState) state);
 }
 
-static void native_rct_gst_set_uri(JNIEnv* env, jobject thiz, jstring uri_j)
-{
-    (void)env;
-    (void)thiz;
-
-    gchar *uri = (gchar *)(*env)->GetStringUTFChars(env, uri_j, 0);
-    rct_gst_set_uri(get_user_data(), uri);
-}
-
-static void native_rct_gst_set_volume(JNIEnv *env, jobject thiz, gdouble volume)
-{
-    (void)env;
-    (void)thiz;
-
-    rct_gst_set_volume(get_user_data(), (gdouble)volume);
-}
-
 static void native_rct_gst_set_ui_refresh_rate(JNIEnv* env, jobject thiz, jint audio_level_refresh_rate)
 {
     (void)env;
@@ -265,9 +241,7 @@ static void native_rct_gst_seek(JNIEnv* env, jobject thiz, jint progress) {
 }
 
 static void native_rct_on_player_init(JNIEnv* env, jobject thiz) {
-    rct_gst_set_uri(get_user_data(), get_user_data()->configuration->uri);
     rct_gst_set_ui_refresh_rate(get_user_data(), get_user_data()->configuration->uiRefreshRate);
-    rct_gst_set_volume(get_user_data(), get_user_data()->configuration->volume);
 }
 
 static JNINativeMethod native_methods[] = {
@@ -276,8 +250,6 @@ static JNINativeMethod native_methods[] = {
     { "nativeRCTGstGetGStreamerInfo", "()Ljava/lang/String;", (void *) native_rct_gst_get_gstreamer_info },
     { "nativeRCTGstSetPipelineState", "(I)V", (void *) native_rct_gst_set_pipeline_state },
     { "nativeRCTGstSetDrawableSurface", "(Landroid/view/Surface;)V", (void *) native_rct_gst_set_drawable_surface },
-    { "nativeRCTGstSetUri", "(Ljava/lang/String;)V", (void *) native_rct_gst_set_uri },
-    { "nativeRCTGstSetVolume", "(D)V", (void *) native_rct_gst_set_volume },
     { "nativeRCTGstSetUiRefreshRate", "(I)V", (void *) native_rct_gst_set_ui_refresh_rate },
     { "nativeRCTGstSeek", "(J)V", (void *) native_rct_gst_seek },
     { "nativeRCTOnPlayerInit", "()V", (void *) native_rct_on_player_init }

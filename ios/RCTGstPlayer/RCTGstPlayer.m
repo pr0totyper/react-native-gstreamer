@@ -35,22 +35,10 @@
 RCT_EXPORT_MODULE();
 
 // Shared properties
-RCT_CUSTOM_VIEW_PROPERTY(uri, NSString, RCTGstPlayerView)
-{
-    NSString* uri = [RCTConvert NSString:json];
-    if (uri.length > 0) {
-        [view setUri:uri];
-    }
-}
 RCT_CUSTOM_VIEW_PROPERTY(uiRefreshRate, NSNumber, RCTGstPlayerView)
 {
     guint64 refreshRate = [[RCTConvert NSNumber:json] unsignedLongLongValue];
     [view setRefreshRate:refreshRate];
-}
-RCT_CUSTOM_VIEW_PROPERTY(volume, NSNumber, RCTGstPlayerView)
-{
-    gdouble volume = [[RCTConvert NSNumber:json] doubleValue];
-    [view setVolume:volume];
 }
 RCT_CUSTOM_VIEW_PROPERTY(shareInstance, BOOL, RCTGstPlayerView)
 {
@@ -61,8 +49,6 @@ RCT_CUSTOM_VIEW_PROPERTY(shareInstance, BOOL, RCTGstPlayerView)
 RCT_EXPORT_VIEW_PROPERTY(onPlayerInit, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPadAdded, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onStateChanged, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onVolumeChanged, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onUriChanged, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPlayingProgress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onBufferingProgress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onEOS, RCTBubblingEventBlock)

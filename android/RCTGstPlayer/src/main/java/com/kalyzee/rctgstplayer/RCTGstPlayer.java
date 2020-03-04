@@ -1,6 +1,6 @@
 package com.kalyzee.rctgstplayer;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
@@ -39,18 +39,6 @@ public class RCTGstPlayer extends SimpleViewManager<View> {
     }
 
     // Shared properties
-    @ReactProp(name = "uri")
-    public void setUri(View controllerView, String uri) {
-        Log.d(RCTGstPlayerController.LOG_TAG, "ReactProp uri : " + uri);
-        playerController.setRctGstUri(uri);
-    }
-
-    @ReactProp(name = "volume")
-    public void setVolume(View controllerView, double volume) {
-        Log.d(RCTGstPlayerController.LOG_TAG, "ReactProp volume : " + volume);
-        playerController.setRctGstVolume(volume);
-    }
-
     @ReactProp(name = "uiRefreshRate")
     public void setUiRefreshRate(View controllerView, int uiRefreshRate) {
         Log.d(RCTGstPlayerController.LOG_TAG, "ReactProp refreshRate : " + uiRefreshRate);
@@ -97,10 +85,6 @@ public class RCTGstPlayer extends SimpleViewManager<View> {
                         "onStateChanged", MapBuilder.of("registrationName", "onStateChanged")
                 ).put(
                         "onPlayingProgress", MapBuilder.of("registrationName", "onPlayingProgress")
-                ).put(
-                        "onVolumeChanged", MapBuilder.of("registrationName", "onVolumeChanged")
-                ).put(
-                        "onUriChanged", MapBuilder.of("registrationName", "onUriChanged")
                 ).put(
                         "onEOS", MapBuilder.of("registrationName", "onEOS")
                 ).put(

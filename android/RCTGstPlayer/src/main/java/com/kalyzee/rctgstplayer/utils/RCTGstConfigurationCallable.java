@@ -16,12 +16,6 @@ public interface RCTGstConfigurationCallable {
     // Called method when GStreamer state changes
     void onStateChanged(int old_state, int new_state);
 
-    // Called method when current media volume changes
-    void onVolumeChanged(RCTGstAudioLevel[] audioLevel, int nbChannels);
-
-    // Called when changing uri is over
-    void onUriChanged(String new_uri);
-
     // Called when playing progression changed / duration is defined
     void onPlayingProgress(long progress, long duration);
 

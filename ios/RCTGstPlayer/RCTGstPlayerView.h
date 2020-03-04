@@ -19,7 +19,7 @@
     GstState pipelineState;
     gboolean is_view_ready;
     
-    NSString *uri;
+    guint64 port;
     guint64 refreshRate;
     gdouble volume;
 }
@@ -28,8 +28,6 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onPlayerInit;
 @property (nonatomic, copy) RCTBubblingEventBlock onPadAdded;
 @property (nonatomic, copy) RCTBubblingEventBlock onStateChanged;
-@property (nonatomic, copy) RCTBubblingEventBlock onVolumeChanged;
-@property (nonatomic, copy) RCTBubblingEventBlock onUriChanged;
 @property (nonatomic, copy) RCTBubblingEventBlock onPlayingProgress;
 @property (nonatomic, copy) RCTBubblingEventBlock onBufferingProgress;
 @property (nonatomic, copy) RCTBubblingEventBlock onEOS;
@@ -48,9 +46,7 @@
 - (void)setPipelineState:(int)pipelineState;
 - (void)seek:(gint64)position;
 
-- (void)setUri:(NSString*)uri;
 - (void)setRefreshRate:(guint64)refreshRate;
-- (void)setVolume:(gdouble)volume;
 
 // Setters
 - (void)setShareInstance:(BOOL)_shareInstance;
