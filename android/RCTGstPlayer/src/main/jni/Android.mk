@@ -64,7 +64,7 @@ include $(GSTREAMER_NDK_BUILD_PATH)/plugins.mk
                              $(GSTREAMER_PLUGINS_EFFECTS)   \
                              $(GSTREAMER_PLUGINS_NET_RESTRICTED)
 
-G_IO_MODULES              := gnutls
+G_IO_MODULES              := openssl
 GSTREAMER_EXTRA_DEPS      := gstreamer-video-1.0
 
 include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer-1.0.mk
